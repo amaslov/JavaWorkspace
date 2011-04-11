@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mbean SYSTEM "file:/opt/jboss-3.2.0RC2/docs/dtd/jboss_xmbean_1_0.dtd">
+	<mbean>
+		<description><![CDATA[Globalros TFTPWorker Thread]]></description>
+  	<descriptors>
+    	<persistence persistPolicy="Never"
+     		           persistPeriod="10"
+       		         persistLocation="pl1"
+									 persistName="TftpServer"/>
+	    <currencyTimeLimit value="10"/>
+    	<state-action-on-update value="restart"/>
+  	</descriptors>
+		<class>com.globalros.tftp.TFTPPool$TFTPRHThread</class>
+
+	  <constructor>
+  	  <description><![CDATA[Default constructor of TFTPServer]]></description>
+    	<name>com.globalros.tftp.TFTPPool$TFTPRHThread</name>
+	  </constructor>
+
+	  <!--attributes-->
+		<attribute access="read-only" getMethod="getRunning">
+			<description><![CDATA[This is the pool size of how many simulteanious worker threads / client connections can be handled]]></description>
+			<name>Running</name>
+			<type>boolean</type>
+    	<descriptors>
+      	<persistence persistPolicy="Never"
+        	           persistPeriod="30"/>
+				<currencyTimeLimit value="30"/>
+  	  </descriptors>
+ 	 	</attribute>
+		<attribute access="read-only" getMethod="getName">
+			<description><![CDATA[This is a unique identifying string of the thread]]></description>
+			<name>Identity</name>
+      <type>java.lang.String</type>
+      <descriptors>
+        <persistence persistPolicy="Never"
+                     persistPeriod="30"/>
+        <currencyTimeLimit value="30"/>
+      </descriptors>
+    </attribute>
+		<attribute access="read-only" getMethod="getClient">
+			<description><![CDATA[This is a unique identifying string of the thread]]></description>
+			<name>Client</name>
+      <type>java.lang.String</type>
+      <descriptors>
+        <persistence persistPolicy="Never"
+                     persistPeriod="30"/>
+        <currencyTimeLimit value="30"/>
+      </descriptors>
+    </attribute>
+</mbean>

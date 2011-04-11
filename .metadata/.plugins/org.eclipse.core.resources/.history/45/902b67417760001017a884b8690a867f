@@ -1,0 +1,212 @@
+package main;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+import javax.swing.Timer;
+
+public class FtpServerThread extends Thread {
+	
+	protected DatagramSocket serverSocket = null;
+	//protected BufferedReader in = null;
+	static int FTP_SERVER_PORT = 9093;
+	static int FTP_CLIENT_PORT = 9094;
+	public String fileName;
+	//Queue<FTPPacket> inBuffer;
+	//Queue<FTPPacket> outBuffer;
+	BufferedOutputStream fileWriter;
+	//BufferedInputStream fileReader;
+	long sequenceNumber=0;
+	//static int BUFFER_LENGTH =1;
+	static int PACKET_DATA_LENGTH = 400;
+	byte[] buffer;
+	InetAddress clientAddress;
+	InetAddress serverAddress;
+	byte HAS = 1;
+	byte HASNOT=0;
+	//Timer timer;
+	//indicates that there are more data to read from file
+	boolean moreFile = true;
+	boolean isConnected = false;
+	Random randomGen;
+	static int SEED = 1000;
+	
+	public FtpServerThread()
+	{
+		//this.serverAddress=serverAddress;
+		//this.fileName = fileName;
+		//creates socket bound to prespecified server port
+		createSocket (FTP_SERVER_PORT);
+		serverAddress=serverSocket.getLocalAddress();
+		//buffer for FTPPacket data.
+		//inBuffer = new LinkedList<FTPPacket>();
+		buffer = new byte[PACKET_DATA_LENGTH+12];
+		//opens output file
+		//openOutputFile();
+		randomGen = new Random();
+	}
+	
+	
+	//main logic
+	public void run(){
+		
+		while (moreFile)
+		{
+			FTPPacket packet = receiveData();
+			//analyzePacket(); 
+			if (packet.isSYN())
+			{
+				clientAddress=packet.getAddress();
+				if (packet.getSequenceNumber()!=0)
+					break;
+				setSequence(packet.getSequenceNumber());
+				FTPPacket newPacket = new FTPPacket(1,clientAddress,HAS,HAS,HASNOT,0,null);
+				sendData(newPacket);
+				setSequence(1);
+			}
+			else
+			{
+				//accept packets only from specified address
+				if (packet.getAddress()!=clientAddress)
+				{break;}
+				if (doDropPacket())
+				{break;}
+				long newSequenceNumber = packet.getSequenceNumber();
+				//accept only packets with correct sequence number
+				if (newSequenceNumber!=sequenceNumber)
+					{break;}
+				if (newSequenceNumber==1)
+				{
+					buffer=packet.getPayload();
+					byte fileNameLength=buffer[0];
+					byte[] byteString = new byte[255];
+					for (int i=1;i<=fileNameLength;i++)
+					{
+						byteString[i-1]=buffer[i];
+					}
+					fileName=new String(byteString);
+					openOutputFile();
+					byte[] outputData = new byte [packet.getPayloadLength()-fileNameLength-1];
+					for (int i=fileNameLength+1;i<packet.getPayloadLength();i++)
+					{
+						outputData[i-fileNameLength-1]=buffer[i];
+					}
+					writeData(outputData);
+					increaseSequence(outputData.length);
+					//setSequence(outputData.length+sequenceNumber);
+				}
+				else
+				{
+					//buffer = packet.getPayload();
+					byte[] outputData = new byte [packet.getPayloadLength()];
+					outputData=packet.getPayload();
+					writeData(outputData);
+					set
+				}
+				
+				
+				
+			}
+			//receives packet, gets sequence number of the packet
+			//long seq=receiveData();
+			//sendAck();
+			//deletes all packets from the queue with sequence number smaller than received number.
+			//writeData();
+		}
+		
+	}
+	
+    private void openOutputFile() {
+            try {
+				fileWriter = new BufferedOutputStream(new FileOutputStream(fileName));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}  
+    }
+    
+    public void writeData(byte[] data)
+    {
+    	try {
+			fileWriter.write(data);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+	public void closeFile()
+	{
+		if (fileWriter!=null)
+		{
+			try {
+				fileWriter.flush();
+				fileWriter.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		moreFile=false;
+	}
+	public FTPPacket receiveData()
+	{
+		DatagramPacket dataPacket = new DatagramPacket(buffer, buffer.length);
+		try {
+			serverSocket.receive(dataPacket);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new FTPPacket(dataPacket.getData(), dataPacket.getLength());
+	}
+	
+	public void sendData(FTPPacket packet)
+	{
+		DatagramPacket dataPacket = new DatagramPacket(packet.getBinary(),packet.Length,packet.getAddress(), FTP_CLIENT_PORT);
+		try {
+			serverSocket.send(dataPacket);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void createSocket(int port)
+	{
+		try {
+			//Client and server use different ports.
+			this.serverSocket=new DatagramSocket(port);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean doDropPacket()
+	{
+		if (randomGen.nextInt(SEED)==1)
+		return true;
+		return false;
+	}
+	
+	//increases sequence number
+	public synchronized void increaseSequence(long offset)
+	{
+		sequenceNumber +=offset;
+	}
+	
+	//sets sequence number
+	public synchronized void setSequence(long number)
+	{
+		sequenceNumber=number;
+	}
+	
+	//gets current sequence number
+	public synchronized long getSequence()
+	{
+		return sequenceNumber;
+	}
+	
+	
+}

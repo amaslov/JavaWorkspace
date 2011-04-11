@@ -1,0 +1,6 @@
+com.globalros.tftp
+com.globalros.tftp.client
+com.globalros.tftp.common
+com.globalros.tftp.mbean
+com.globalros.tftp.server
+com.globalros.tftp.test

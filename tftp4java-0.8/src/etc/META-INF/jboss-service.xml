@@ -1,0 +1,9 @@
+<!-- The SAR descriptor for tftp services -->
+<server>
+	<mbean code="com.globalros.tftp.TFTPServer" 
+		xmbean-dd="META-INF/tftpserver.xml"
+		name="ROS:service=TFTPServer">
+		<attribute name="ServerPort">2069</attribute>
+		<attribute name="PoolSize">5</attribute>
+	</mbean>
+</server>

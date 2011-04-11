@@ -1,0 +1,72 @@
+package main;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.Timer;
+
+public class ftpClient {
+FileInputStream fis;
+public String fileName;
+DatagramSocket inSocket;
+DatagramSocket outSocket;
+static int RTP_SERVER_PORT = 9093;
+Queue<FTPPacket> buffer;
+InetAddress serverAddress;
+Timer timer;
+long SequenceNumber=0;
+
+	/**
+	 * @param args
+	 */
+public ftpClient(InetAddress serverAddress, String fileName){
+
+}
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		String serverAddressString="";
+		String fileNameString="";
+		if (args==null)
+		{
+			System.out.print("Please input server address: ");
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			try {
+				serverAddressString = br.readLine();
+			} catch (IOException e) {
+
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.print("Please input file name: ");
+			try {
+			fileNameString = br.readLine();
+			} catch (IOException e) {
+
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			
+		}
+		else{
+			try{
+				serverAddressString = args[0];
+				fileNameString = args[1];
+			}
+			catch (Exception e){
+				e.printStackTrace();
+			}
+			
+		}
+		try{
+			InetAddress iAd = InetAddress.getByName(serverAddressString);
+			ftpClient client = new ftpClient(iAd, fileNameString);
+			
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+}

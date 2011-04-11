@@ -1,0 +1,32 @@
+package main;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+import javax.swing.*;
+import javax.swing.Timer;
+
+public class ftpClient {
+FileInputStream fis;
+public String fileName;
+DatagramSocket inSocket;
+DatagramSocket outSocket;
+static int RTP_SERVER_PORT = 9093;
+Queue<FTPPacket> inBuffer;
+Queue<FTPPacket> outBuffer;
+InetAddress serverAddress;
+Timer timer;
+long SequenceNumber=0;
+
+
+public ftpClient(InetAddress serverAddress, String fileName) throws SocketException{
+	this.serverAddress=serverAddress;
+	this.fileName = fileName;
+	this.inSocket=new DatagramSocket(RTP_SERVER_PORT);
+	this.outSocket=new DatagramSocket();
+	inBuffer = new LinkedList<FTPPacket>();
+	outBuffer = new LinkedList<FTPPacket>();
+}
+
+}

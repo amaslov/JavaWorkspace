@@ -1,0 +1,95 @@
+package main;
+
+import java.io.*;
+import java.net.*;
+//import java.util.*;
+//import javax.swing.Timer;
+
+public class FtpClient{
+	//FileInputStream fis;
+	public String fileName;
+	//DatagramSocket inSocket;
+	//DatagramSocket outSocket;
+	static int RTP_SERVER_PORT = 9093;
+	//Queue<FTPPacket> inBuffer;
+	//Queue<FTPPacket> outBuffer;
+	InetAddress serverAddress;
+	//Timer timer;
+	//long SequenceNumber=0;
+	//static int BUFFER_LENGTH =1;
+
+	/*
+public FtpClient(InetAddress serverAddress, String fileName) throws SocketException{
+	super();
+//	this.serverAddress=serverAddress;
+//	this.fileName = fileName;
+}
+	 */
+
+	//Main method
+	public static void main(String[] args) throws Exception {
+		// get server address and file name 
+		String serverAddressString="";
+		String fileNameString="";
+		
+		System.out.println(System.getProperty("user.dir"));
+		//if no arguments - ask for command line input
+		if (args==null) {
+			boolean serverOk=false;
+			boolean fileOk=false;
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			while (!serverOk) {
+				System.out.print("Please input server address: ");
+				try {
+					serverAddressString = br.readLine();
+					serverOk=true;
+					break;
+				} catch (IOException e) {
+					//error
+					e.printStackTrace();
+					System.out.print(e.getMessage());
+				}
+			}
+			while (!fileOk){
+				System.out.print("Please input file name: ");
+				try {
+					fileNameString = br.readLine();
+					if ((fileNameString.length()>255)||(fileNameString.length()==0)){
+						throw new IOException("Invalid file name. It should be more than 0 characters, less than 255 characters");
+					}
+					fileOk=true;
+				} catch (IOException e) {
+					// error
+					e.printStackTrace();
+					System.out.print(e.getMessage());
+				}
+
+			}
+		}
+		else {
+			try {
+				
+				serverAddressString = args[0];
+				fileNameString = args[1];
+			}
+			catch (Exception e){
+				e.printStackTrace();
+			}
+		}
+		if (fileNameString.length() > 255) {
+			throw new IOException("Filename is longer than 255 characters");
+		}
+		if (fileNameString.length()==0) {
+			throw new IOException("Invalid filename");
+		}
+		//
+		try {
+			InetAddress iAd = InetAddress.getByName(serverAddressString);
+			FtpClientThread client = new FtpClientThread(iAd, fileNameString);
+			client.start();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+}

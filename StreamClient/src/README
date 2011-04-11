@@ -1,0 +1,30 @@
+Programming assignment #1
+Done by Aleksey Maslov
+email: masloa@rpi.edu
+RIN: 660784145
+________
+Comments:
+I could not succeed launching the server and client using command-line string like
+"java Client [Server hostname] [Server RTSP listening port] [Video file requested]"
+
+I had to add the required files to Eclipse, and use 2 machines to connect and test.
+I haven't created any build files/neither I built any executables, thus I had to use 2 computers.
+
+I have filled in all the required fields, as well as I have added several try-catch blocks to improve stability.
+
+I have tested this application on several virtual machines, as well as I have tried using 2 different computers to connect and stream video.
+________
+Problems encountered during the development process:
+
+1. When client is running, and server isn't running, main executable hangs up, and then randomly crashes, because it can't create new socket connection.
+I've put it in the try-catch block.
+
+2. In my configuration it was hard to pass file name to the server - it required special
+formatting. After several tries I understood that I need to use more escape characters, what solved the problem.
+________
+Suggested improvements:
+
+1. I did not implement this feature in current assignment scope, however it is strongly recommended for client to be more aware of the server status, as well as connection issues. I have used VMWare with packet loss occurrences, and it has caused sometimes  client or server crashes.
+
+2. Other streaming improvements.
+_________

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main"/>
+	<classpathentry kind="lib" path="lib/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/client/jbossjmx-ant.jar"/>
+	<classpathentry kind="var" path="JBOSS_HOME/lib/jboss-jmx.jar"/>
+	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

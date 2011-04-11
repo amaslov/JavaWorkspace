@@ -1,0 +1,4 @@
+DONE:Clean up so that tftp4java can be used without j2sdkee1.4 j2ee.jar!
+Remove jboss dependency for the standalone version
+Clean up comments!
+server can be deployed as xmbean within jboss through META-INF/tftpserver.xml

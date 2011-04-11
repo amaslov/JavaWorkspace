@@ -1,0 +1,190 @@
+package main;
+
+public class FTPPacket {
+
+
+	  //size of the FTP header:
+	  static int HEADER_SIZE = 12;
+
+	  //Fields that compose the FTP header
+	 // public int SourcePort;
+	  public long SequenceNumber;
+	  public long SourceAddress;
+	  public byte ACK;
+	  public byte SYN;
+	  public byte FIN;
+	  public int Length;
+	  
+	  //Bitstream of the FTP header
+	  public byte[] header;
+
+	  //Bitstream of the FTP data
+	  public byte[] payload;
+	  
+
+
+	  //--------------------------
+	  //Constructor of an FTPpacket object from header fields and data bitstream
+	  //--------------------------
+	  public FTPPacket(long SequenceNumber, long SourceAddress, byte ACK, byte SYN, byte FIN, int Length, byte[] data){  
+		//Populate header
+	   // this.SourcePort = SourcePort;
+	    this.SequenceNumber=SequenceNumber;
+	    this.SourceAddress=SourceAddress;
+	    this.ACK=ACK;
+	    this.SYN=SYN;
+	    this.FIN=FIN;
+	    this.Length=Length;
+	    //build the header:
+	    //--------------------------
+	    header = new byte[HEADER_SIZE];
+	    for (int i=0;i<4;i++)
+	    {
+	    	int offset = (3-i)*8;
+	    	header[i]=(byte)((SequenceNumber>>>offset)&0xFF);
+	    	header[i+4]=(byte)((SourceAddress>>>offset)&0xFF);
+	    }
+	//	header[0]=(byte) (SequenceNumber>>24);
+	//	header[1]=(byte) (SequenceNumber>>16);
+	//	header[2]=(byte) (SequenceNumber>>8);
+	//	header[3]=(byte) (SequenceNumber&0xFF);
+	//	header[4]=(byte) (SourceAddress>>24);
+	//	header[5]=(byte) (SourceAddress>>16);
+	//	header[6]=(byte) (SourceAddress>>8);
+	//	header[7]=(byte) (SourceAddress&0xFF);
+		header[8]=(byte) (header[8]|ACK<<7);
+		header[8]=(byte) (header[8]|SYN<<6);
+		header[8]=(byte) (header[8]|FIN<<5);
+		header[9]=0;
+		header[10]=(byte)((Length>>8)&0xFF);
+		header[11]=(byte)(Length&0xFF);
+
+		payload = new byte[Length];
+		payload=data;
+
+	  }
+	    
+	  //--------------------------
+	  //Constructor of an FTPpacket object from the packet bistream 
+	  //--------------------------
+	  public FTPPacket(byte[] packet, int packet_size)
+	  {
+	   
+
+	    //check if total packet size is lower than the header size
+	    if (packet_size >= HEADER_SIZE) 
+	      {
+		//get the header bitsream:
+		header = new byte[HEADER_SIZE];
+		for (int i=0; i < HEADER_SIZE; i++)
+		  header[i] = packet[i];
+
+		//get the payload bitstream:
+		Length = packet_size - HEADER_SIZE;
+		payload = new byte[Length];
+		for (int i=HEADER_SIZE; i < packet_size; i++)
+		  payload[i-HEADER_SIZE] = packet[i];
+
+		//interpret the changing fields of the header:
+		for (int i=0;i<4;i++)
+		{
+			long SeqNum=0;
+			long SourceAdd=0;
+			SeqNum+=header[i];
+			SourceAdd+=header[4+i];
+			SourceAdd=SourceAdd<<((3-i)*8);
+			SeqNum=SeqNum<<((3-i)*8);
+			SequenceNumber+=SeqNum;
+			SourceAddress+=SourceAdd;
+			
+		}
+			ACK=(byte) ((header[9]>>>7)&0xFE);
+			SYN=(byte)((header[9]>>>6)&0xFE);
+			FIN=(byte)((header[9]>>>5)&0xFE);
+			
+	   }
+	 }
+
+	  //--------------------------
+	  //getpayload: return the payload bistream of the RTPpacket and its size
+	  //--------------------------
+	  public int getpayload(byte[] data) {
+
+	    for (int i=0; i < Length; i++)
+	      data[i] = payload[i];
+
+	    return(Length);
+	  }
+
+	  //--------------------------
+	  //getpayload_length: return the length of the payload
+	  //--------------------------
+	  public int getpayload_length() {
+	    return(Length);
+	  }
+
+	  //--------------------------
+	  //getlength: return the total length of the FTP packet
+	  //--------------------------
+	  public int getlength() {
+	    return(Length + HEADER_SIZE);
+	  }
+
+	  //--------------------------
+	  //getpacket: returns the packet bitstream and its length
+	  //--------------------------
+	  public int getpacket(byte[] packet)
+	  {
+	    //construct the packet = header + payload
+	    for (int i=0; i < HEADER_SIZE; i++)
+		packet[i] = header[i];
+	    for (int i=0; i < Length; i++)
+		packet[i+HEADER_SIZE] = payload[i];
+
+	    //return total size of the packet
+	    return(Length + HEADER_SIZE);
+	  }
+
+	  //--------------------------
+	  //getsequencenumber
+	  //--------------------------
+	  public int getsequencenumber() {
+	    return(SequenceNumber);
+	  }
+
+	  //--------------------------
+	  //getpayloadtype
+	  //--------------------------
+	  public int getpayloadtype() {
+	    return(PayloadType);
+	  }
+
+
+	  //--------------------------
+	  //print headers without the SSRC
+	  //--------------------------
+	  public void printheader()
+	  {
+	    //TO DO: uncomment
+		/*for (int i=0; i < (HEADER_SIZE-4); i++)
+	      {
+		for (int j = 7; j>=0 ; j--)
+		  if (((1<<j) & header[i] ) != 0)
+		    System.out.print("1");
+		else
+		  System.out.print("0");
+		System.out.print(" ");
+	      }
+
+	    System.out.println();*/
+	  }
+
+	  //return the unsigned value of 8-bit integer nb
+	  static int unsigned_int(int nb) {
+	    if (nb >= 0)
+	      return(nb);
+	    else
+	      return(256+nb);
+	  }
+
+}

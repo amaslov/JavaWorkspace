@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- =======================================================================
+	This is the build file for tftp4java
+	(c) Melexis Telecom and/or Remote Operating Services B.V.
+
+	Distributable under LGPL license
+	See terms of license at gnu.org
+	======================================================================= -->
+<project basedir="." default="jar" name="tftp4java">
+
+  <!--
+    Give user a chance to override without editing this file
+    (and without typing -D each time they run it)
+  -->
+  <property file=".ant.properties"/>
+  <property file="${user.home}/.ant.properties"/>
+
+  <property name="Name" value="tftp4java"/>
+  <property name="version" value="0.8"/>
+
+  <target name="init">
+    <echo message="build.compiler = ${build.compiler}"/>
+    <echo message="user.home = ${user.home}"/>
+    <echo message="java.home = ${java.home}"/>
+    <echo message="ant.home = ${ant.home}"/>
+    <echo message="jboss.home = ${jboss.home}"/>
+    <echo message="java.class.path = ${java.class.path}"/>
+    <echo message=""/>
+
+    <available classname="java.lang.StrictMath" property="jdk1.3+"/>
+  </target>
+
+  <property name="src.dir" value="${basedir}/src"/>
+  <property name="src.main.dir" value="${src.dir}/main"/>
+  <property name="src.etc.dir" value="${src.dir}/etc"/>
+  <property name="src.bin.dir" value="${src.dir}/bin"/>
+
+  <property name="lib.dir" value="${basedir}/lib"/>
+  <property name="doc.dir" value="${basedir}/doc"/>
+  <property name="build.dir" value="${basedir}/build"/>
+  <property name="bin.dir" value="${basedir}/bin"/>
+
+  <property name="build.src.dir" value="${build.dir}/src"/>
+  <property name="build.src.main.dir" value="${build.src.dir}/main"/>
+  <property name="build.deploy.dir" value="${build.dir}/deploy"/>
+  <property name="build.classes.dir" value="${build.dir}/classes"/>
+  <property name="singlethread.class.test" value="com.globalros.tftp.test.TFTPClientTest"></property>
+  <property name="multithread.class.test" value="com.globalros.tftp.test.MultiThreadedTFTPTestSuite"></property>
+
+  <path id="base.path">
+    <pathelement location="${lib.dir}/log4j.jar"/>
+    <pathelement location="${lib.dir}/junit.jar"/>
+    <pathelement location="${jboss.home}/client/jbossjmx-ant.jar"/>
+  </path>
+
+  <path id="test.path">
+    <pathelement location="${build.classes.dir}"/>
+    <pathelement location="${lib.dir}/log4j.jar"/>
+    <pathelement location="${lib.dir}/junit.jar"/>
+    <pathelement location="${jboss.home}/client/jbossjmx-ant.jar"/>
+
+    <pathelement location="${jboss.home}/lib/jboss-jmx.jar"/>
+  </path>
+
+  <!-- =================================================================== -->
+  <!-- Compiles the source code                                            -->
+  <!-- =================================================================== -->
+  <target depends="init" name="compile">
+    <mkdir dir="${build.classes.dir}"/>
+    <javac classpathref="base.path" debug="on" deprecation="off" destdir="${build.classes.dir}" optimize="on">
+      <src path="${src.main.dir}"/>
+    </javac>
+  </target>
+
+
+   <!-- =================================================================== -->
+   <!-- Creates the tftp4java-server and tftp4java client jar               -->
+   <!-- =================================================================== -->
+    <target depends="compile" name="jar">
+      <mkdir dir="${build.deploy.dir}"/>
+      <jar jarfile="${build.deploy.dir}/tftp4java-server.jar">
+        <fileset dir="${build.classes.dir}"
+		     includes="com/globalros/tftp/server/**,com/globalros/tftp/common/**,com/globalros/tftp/mbean/**"/>
+      </jar>
+      <jar jarfile="${build.deploy.dir}/tftp4java-client.jar">
+        <fileset dir="${build.classes.dir}"
+		     includes="com/globalros/tftp/client/**,com/globalros/tftp/common/**"/>
+      </jar>
+
+   </target>
+
+   <!-- =================================================================== -->
+   <!-- Creates the tftp4java sar                                           -->
+   <!-- =================================================================== -->
+    <target name="sar" depends="jar">
+      <jar jarfile="${build.deploy.dir}/tftp4java.sar">
+        <fileset dir="${src.etc.dir}" includes="META-INF/**"/>
+				<fileset dir="${build.deploy.dir}" includes="tftp4java-server.jar"/>
+      </jar>
+   </target>
+
+   <!-- =================================================================== -->
+   <!-- Creates the tftp4java test jar                                           -->
+   <!-- =================================================================== -->
+   <target name="tests-jar" depends="compile" >
+     <mkdir dir="${build.deploy.dir}"/>
+	 <copy todir="${build.classes.dir}">
+	   <fileset dir="${lib.dir}" includes="*.properties" />
+	 </copy>
+	 <jar jarfile="${build.deploy.dir}/tftp4java-test.jar">
+	   <fileset dir="${build.classes.dir}"
+	      includes="com/globalros/tftp/test/**, TFTPTest.properties"/>
+	 </jar>
+   </target>
+
+   <!-- =================================================================== -->
+   <!-- Run the JUnit tests.                                          -->
+   <!-- =================================================================== -->
+    <target depends="tests-jar" name="tests">
+	  <junit fork="yes" haltonfailure="yes">
+		<test name="${singlethread.class.test}" />
+		<test name="${multithread.class.test}" />
+		<classpath refid="test.path"></classpath>
+      </junit>
+    </target>
+
+   <!-- =================================================================== -->
+   <!-- Builds the documentation                                            -->
+   <!-- =================================================================== -->
+   <target name="javadoc">
+      <mkdir dir="${doc.dir}"/>
+     <javadoc access="public" author="true"
+        classpathref="base.path"
+        destdir="${doc.dir}"
+        doctitle="Java tftp server - tftp4java"
+        nodeprecated="false" nodeprecatedlist="false"
+        noindex="false" nonavbar="false" notree="false"
+        packagenames="com.globalros.tftp,com.globalros.tftp.common,com.globalros.tftp.mbean,com.globalros.tftp.server,com.globalros.tftp.client,com.globalros.tftp.test"
+        sourcepath="${src.main.dir}"
+        splitindex="true" use="true" version="true"/>
+   </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the distribution                                            -->
+  <!-- =================================================================== -->
+  <target name="dist" depends="clean, sar, javadoc">
+    <mkdir dir="${bin.dir}"/>
+      <copy todir="${bin.dir}">
+         <fileset dir="${src.bin.dir}" includes="*.sh"/>
+         <fileset dir="${build.deploy.dir}" includes="*"/>
+      </copy>
+    <chmod perm="+x" file="${bin.dir}/run.sh"/>
+    <fixcrlf srcdir="${bin.dir}" includes="run.sh" cr="remove"/>
+    <fixcrlf srcdir="${bin.dir}" includes="run.bat" cr="add"/>
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Packages the distribution as .zip                                   -->
+  <!-- =================================================================== -->
+  <target name="dist-zip" depends="dist">
+    <zip zipfile="${Name}-${version}.zip" >
+        <fileset dir="${basedir}" >
+            <exclude name="${Name}-${version}.zip" />
+            <exclude name="**/*.bak" />
+            <exclude name=".ant.properties" />
+            <exclude name="build/**" />
+        </fileset>
+    </zip>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Cleans up the current build                                         -->
+  <!-- =================================================================== -->
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${doc.dir}"/>
+    <delete dir="${bin.dir}"/>
+    <delete file="${Name}-${version}.zip" />
+  </target>
+
+</project>

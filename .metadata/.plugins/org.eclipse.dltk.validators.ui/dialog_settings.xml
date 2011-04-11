@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="35" key="org.eclipse.dltk.validators.ui.ValidatorPreferencePage.columnWidth0"/>
+	<item value="30" key="org.eclipse.dltk.validators.ui.ValidatorPreferencePage.columnWidth1"/>
+	<item value="1" key="org.eclipse.dltk.validators.ui.ValidatorPreferencePage.sortColumn"/>
+	<item value="56" key="org.eclipse.dltk.validators.ui.ValidatorPreferencePage.columnWidth2"/>
+</section>

@@ -1,0 +1,277 @@
+package main;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.BitSet;
+
+public class FTPPacket{
+
+
+	  //size of the FTP header:
+	  static int HEADER_SIZE = 12;
+
+	  //Fields that compose the FTP header
+	 // public int SourcePort;
+	  long SequenceNumber;
+	  InetAddress SourceAddress;
+	 // public long SourceAddress;
+	  byte ACK;
+	  byte SYN;
+	  byte FIN;
+	  int Length;
+	  long timeStamp = 0;
+	  //Bitstream of the FTP header
+	  byte[] header;
+
+	  //Bitstream of the FTP data
+	  byte[] payload;
+	  
+
+
+	  //--------------------------
+	  //Constructor of an FTPpacket object from header fields and data bitstream
+	  //--------------------------
+	  public FTPPacket(long SequenceNumber, InetAddress SourceAddress, byte ACK, byte SYN, byte FIN, int Length, byte[] data){  
+		//Populate header
+		  
+	    //Source port requirement was canceled, thus keeping it here for future needs 
+		// this.SourcePort = SourcePort;
+	    this.SequenceNumber=SequenceNumber;
+	    this.SourceAddress=SourceAddress;
+	    this.ACK=ACK;
+	    this.SYN=SYN;
+	    this.FIN=FIN;
+	    this.Length=Length;
+	    //build the header:
+	    //--------------------------
+	    header = new byte[HEADER_SIZE];
+	    byte[] sourceAddressByte = new byte[4];
+	    sourceAddressByte=SourceAddress.getAddress();
+	    for (int i=0;i<4;i++)
+	    {
+	    	int offset = (3-i)*8;
+	    	header[i]=(byte)((SequenceNumber>>>offset)&0xFF);
+	    	header[i+4]=sourceAddressByte[i];
+	    	//header[i+4]=(byte)((SourceAddress>>>offset)&0xFF);
+	    }
+	    
+		header[8]=(byte) (header[8]|ACK<<7);
+		header[8]=(byte) (header[8]|SYN<<6);
+		header[8]=(byte) (header[8]|FIN<<5);
+		header[9]=0;
+		header[10]=(byte)((Length>>8)&0xFF);
+		header[11]=(byte)(Length&0xFF);
+		if (Length==0) {
+			payload =null;
+		}
+		else{
+			payload = new byte[Length];
+			payload=data;
+		}
+	  }
+	    
+	  //--------------------------
+	  //Constructor of an FTPpacket object from the packet bistream 
+	  //--------------------------
+	  public FTPPacket(byte[] packet, int packet_size)
+	  {
+	   
+
+	    //check if total packet size is lower than the header size
+	    if (packet_size >= HEADER_SIZE) 
+	      {
+		//get the header bitstream:
+		header = new byte[HEADER_SIZE];
+		for (int i=0; i < HEADER_SIZE; i++)
+		  header[i] = packet[i];
+
+		//get the payload bitstream:
+		Length = packet_size - HEADER_SIZE;
+		if (Length!=0){
+			payload = new byte[Length];
+			for (int i=HEADER_SIZE; i < packet_size; i++)
+				payload[i-HEADER_SIZE] = packet[i];
+		}
+		else
+		{
+			payload=null;
+		}
+		//interpret the changing fields of the header:
+		byte[] sourceAdd = new byte [4];
+		for (int i=0;i<4;i++)
+		{
+			long SeqNum=0;
+			//long SourceAdd=0;
+			
+			SeqNum+=header[i];
+			//SourceAdd+=header[4+i];
+			//SourceAdd=SourceAdd<<((3-i)*8);
+			sourceAdd[i]=header[4+i];
+			SeqNum=SeqNum<<((3-i)*8);
+			SequenceNumber+=SeqNum;
+			//SourceAddress+=SourceAdd;
+			
+		}
+		try {
+			SourceAddress = InetAddress.getByAddress(sourceAdd);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			System.out.println(header[9]);
+			ACK=(byte) ((header[9]>>>7)&0xFE);
+			SYN=(byte)((header[9]>>>6)&0xFE);
+			FIN=(byte)((header[9]>>>5)&0xFE);
+			
+	   }
+	 }
+
+	  //--------------------------
+	  //getpayload: return the payload bitstream of the FTPPacket and its size
+	  //--------------------------
+	  public int getPayload(byte[] data) {
+
+		  if (Length!=0){
+			  for (int i=0; i < Length; i++)
+				  data[i] = payload[i];
+
+	    	return(Length);
+		  }
+		  else 
+			  {
+			  	data=null;
+			  	return 0;
+			  }
+			  
+	  }
+	  
+	  
+	  public byte[] getPayload()
+	  {
+		  if (Length!=0)
+			  return payload;
+		  return null;
+	  }
+
+	  public InetAddress getAddress()
+	  {
+		  return SourceAddress;
+	  }
+	  //--------------------------
+	  //getpayload_length: return the length of the payload
+	  //--------------------------
+	  public int getPayloadLength() {
+	    return(Length);
+	  }
+	  
+	  //--------------------------
+	  //getLength: return the total length of the FTP packet
+	  //--------------------------
+	  public int getTotalLength() {
+	    return(Length + HEADER_SIZE);
+	  }
+
+	  //--------------------------
+	  //getPacket: returns the packet bitstream and its length
+	  //--------------------------
+	  public int getPacket(byte[] packet)
+	  {
+	    //construct the packet = header + payload
+	    for (int i=0; i < HEADER_SIZE; i++)
+		packet[i] = header[i];
+	    if (Length!=0){
+	    	for (int i=0; i < Length; i++)
+	    		packet[i+HEADER_SIZE] = payload[i];
+	    }
+	    //return total size of the packet
+	    return(Length + HEADER_SIZE);
+	  }
+
+	  //--------------------------
+	  //getSequenceNumber
+	  //--------------------------
+	  public long getSequenceNumber() {
+	    return(SequenceNumber);
+	  }
+	  
+	  //returns true if this is ACK packet
+	  public boolean isACK(){
+		  if (ACK==1)
+			  return true;
+		  return false;
+	  }
+	  
+	  //returns true if this is SYN packet
+	  public boolean isSYN(){
+		  if (SYN==1)
+			  return true;
+		  return false;
+	  }
+	  
+	  //returns true if this is FIN packet
+	  public boolean isFIN(){
+		  if(FIN==1)
+			  return true;
+		  return false;
+	  }
+
+	  //prints header
+	  public void printHeader()
+	  {
+		for (int i=0; i < (HEADER_SIZE); i++)
+	      {
+		for (int j = 7; j>=0 ; j--)
+		  if (((1<<j) & header[i] ) != 0)
+		    System.out.print("1");
+		else
+		  System.out.print("0");
+		System.out.print(" ");
+	      }
+
+	    System.out.println();
+	  }
+	  
+	  //gets timeStamp
+	  public long getTimestamp()
+	  {
+		  return timeStamp;
+	  }
+	  
+	  //sets timeStamp
+	  public void setTimestamp(long timeStamp)
+	  {
+		  this.timeStamp=timeStamp;
+	  }
+	    
+	  //returns binary representation of packet data
+	  public byte[] getBinary()
+	  {
+		  if (payload==null)
+		  {
+			  int outputLength = header.length;  
+			  byte[] output = new byte[outputLength];
+			  for (int i=0;i<header.length;i++){
+				  output[i]=header[i];
+			  }
+			  return output;
+		  }
+		  else
+		  {
+			  int outputLength = header.length+payload.length;  
+			  byte[] output = new byte[outputLength];
+			  for (int i=0;i<header.length;i++){
+				  output[i]=header[i];
+			  }
+			  if (payload.length!=0){
+				  for (int i=header.length;i<outputLength;i++){
+					  output[i]=payload[i-header.length];
+				  }
+			  }
+			  return output;
+
+		  }
+		  
+	  }
+
+
+}

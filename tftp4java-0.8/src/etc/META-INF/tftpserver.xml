@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mbean SYSTEM "file:/opt/jboss-3.2.0RC3/docs/dtd/jboss_xmbean_1_0.dtd">
+	<mbean>
+		<description><![CDATA[Globalros MCP-TFTP Server]]></description>
+  	<descriptors>
+    	<persistence persistPolicy="Never"
+     		           persistPeriod="10"
+       		         persistLocation="pl1"
+									 persistName="TftpServer"/>
+	    <currencyTimeLimit value="10"/>
+    	<state-action-on-update value="restart"/>
+  	</descriptors>
+		<class>com.globalros.tftp.TFTPServer</class>
+
+	  <constructor>
+  	  <description><![CDATA[Default constructor of TFTPServer]]></description>
+    	<name>com.globalros.tftp.TFTPServer</name>
+	  </constructor>
+
+	  <!--attributes-->
+		<attribute access="read-write" getMethod="getSize" setMethod="setSize">
+			<description><![CDATA[This is the pool size of how many simulteanious worker threads / client connections can be handled]]></description>
+			<name>PoolSize</name>
+			<type>int</type>
+    	<descriptors>
+      	<persistence persistPolicy="Never"
+        	           persistPeriod="30"/>
+				<currencyTimeLimit value="30"/>
+				<value value="5"/>
+  	  </descriptors>
+ 	 	</attribute>
+		<attribute access="read-write" getMethod="getPort" setMethod="setPort">
+			<description><![CDATA[This is the port to which the tftp server should listen for incoming connections]]></description>
+    <name>ServerPort</name>
+    <type>int</type>
+    <descriptors>
+      <persistence persistPolicy="Never"
+                   persistPeriod="30"/>
+      <currencyTimeLimit value="30"/>
+			<value value="1069"/>
+    </descriptors>
+  </attribute>
+
+	<!--operations -->
+  <operation impact="ACTION_INFO">
+		<description><![CDATA[Starts the tftp server]]></description>
+		<name>connect</name>
+		<return-type>void</return-type>
+  </operation>
+  <operation impact="ACTION_INFO">
+		<description><![CDATA[Stops the tftp server, running threads continue till client disconnects]]></description>
+    <name>disconnect</name>
+    <return-type>void</return-type>
+  </operation>
+  <operation impact="ACTION_INFO">
+		<description><![CDATA[Reloads the configuration file and applies the changes on the running server]]></description>
+    <name>reloadConfig</name>
+    <return-type>void</return-type>
+  </operation>
+</mbean>

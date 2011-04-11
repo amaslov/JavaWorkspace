@@ -1,0 +1,12 @@
+package main;
+import java.io.*;
+public class FileStreamFTP {
+ FileInputStream fis;
+ FileOutputStream fos;
+ String fileName;
+ long sequenceNum;
+ 
+ //Constructor
+ public FileStreamFTP
+	
+}

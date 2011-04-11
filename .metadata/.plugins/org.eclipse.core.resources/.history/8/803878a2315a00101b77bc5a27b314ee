@@ -1,0 +1,140 @@
+package main;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+import javax.swing.*;
+import javax.swing.Timer;
+
+public class ftpClient {
+FileInputStream fis;
+public String fileName;
+DatagramSocket inSocket;
+DatagramSocket outSocket;
+static int RTP_SERVER_PORT = 9093;
+Queue<FTPPacket> inBuffer;
+Queue<FTPPacket> outBuffer;
+InetAddress serverAddress;
+Timer timer;
+long SequenceNumber=0;
+
+
+public ftpClient(InetAddress serverAddress, String fileName) throws SocketException{
+	this.serverAddress=serverAddress;
+	this.fileName = fileName;
+	this.inSocket=new DatagramSocket(RTP_SERVER_PORT);
+	this.outSocket=new DatagramSocket();
+	//xthis.buffer=new Queue<FTPPacket>() {
+		
+		@Override
+		public <T> T[] toArray(T[] arg0) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public Object[] toArray() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public int size() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public boolean retainAll(Collection<?> arg0) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public boolean removeAll(Collection<?> arg0) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public boolean remove(Object arg0) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public Iterator<FTPPacket> iterator() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public boolean isEmpty() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public boolean containsAll(Collection<?> arg0) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public boolean contains(Object arg0) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public void clear() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public boolean addAll(Collection<? extends FTPPacket> arg0) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public FTPPacket remove() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public FTPPacket poll() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public FTPPacket peek() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public boolean offer(FTPPacket e) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public FTPPacket element() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public boolean add(FTPPacket e) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	};
+}
+	
+}

@@ -1,0 +1,31 @@
+package main;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.Timer;
+
+public class ftpClient {
+FileInputStream fis;
+String fileName;
+DatagramSocket FTPsocket;
+static int RTP_SERVER_PORT = 9093;
+//FTPPacket[] buffer;
+Queue<FTPPacket> buffer;
+Timer timer;
+long SequenceNumber=0;
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		if (args==null)
+		{
+			
+		}
+	}
+
+}

@@ -1,0 +1,33 @@
+#Sun Apr 10 20:21:06 EDT 2011
+content_assist_proposals_foreground=0,0,0
+spelling_locale_initialized=true
+spelling_ignore_urls=true
+command=/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/bin/javadoc
+spelling_ignore_non_letters=true
+org.eclipse.jdt.ui.text.templates_migrated=true
+spelling_ignore_ampersand_in_properties=true
+useAnnotationsPrefPage=true
+eclipse.preferences.version=1
+org.eclipse.jface.textfont=1|Monaco|11.0|0|COCOA|1|;
+tabWidthPropagated=true
+org.eclipse.jdt.ui.visibility.order=B,V,R,D,
+org.eclipse.jdt.ui.editor.tab.width=
+spelling_ignore_single_letters=true
+fontPropagated=true
+org.eclipse.jdt.ui.text.custom_code_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates/>
+org.eclipse.jdt.ui.javadoclocations.migrated=true
+proposalOrderMigrated=true
+spelling_user_dictionary_encoding=
+spelling_ignore_mixed=true
+spelling_ignore_java_strings=true
+outlinesortoption=T,SF,SI,SM,F,I,C,M,
+org.eclipse.jdt.ui.formatterprofiles.version=11
+content_assist_proposals_background=255,255,255
+content_assist_number_of_computers=14
+spelling_ignore_digits=true
+spelling_ignore_upper=true
+useQuickDiffPrefPage=true
+org.eclipse.jdt.ui.text.custom_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates/>
+content_assist_lru_history=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><history maxLHS\="100" maxRHS\="10"><lhs name\="java.lang.Exception"><rhs name\="java.net.SocketException"/><rhs name\="java.net.SocketTimeoutException"/></lhs><lhs name\="java.lang.Throwable"><rhs name\="java.net.SocketException"/><rhs name\="java.net.SocketTimeoutException"/></lhs><lhs name\="java.io.IOException"><rhs name\="java.net.SocketException"/><rhs name\="java.net.SocketTimeoutException"/></lhs><lhs name\="java.net.DatagramSocket"><rhs name\="java.net.DatagramSocket"/></lhs><lhs name\="java.util.Random"><rhs name\="java.util.Random"/></lhs><lhs name\="main.FTPPacket"><rhs name\="main.FTPPacket"/></lhs></history>
+spelling_ignore_sentence=true
+org.eclipse.jdt.ui.text.code_templates_migrated=true

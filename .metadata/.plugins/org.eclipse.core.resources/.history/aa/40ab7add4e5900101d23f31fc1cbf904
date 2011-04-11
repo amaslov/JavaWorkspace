@@ -1,0 +1,22 @@
+package main;
+
+
+import java.io.*;
+import java.net.*;
+import java.awt.*;
+import java.util.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.Timer;
+
+public class ftpServer {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
